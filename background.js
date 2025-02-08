@@ -21,10 +21,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     
     switch (selectedQuality) {
         case "720p":
-            qualityOption = "-f bestvideo[height<=720]+bestaudio/best"; 
+            qualityOption = "-f \"bestvideo[height<=720]+bestaudio/best\""; 
             break;
         case "1080p":
-            qualityOption = "-f bestvideo[height<=1080]+bestaudio/best"; 
+            qualityOption = "-f \"bestvideo[height<=1080]+bestaudio/best\""; 
             break;
         case "audio":
             qualityOption = "--extract-audio --audio-format mp3"; 
