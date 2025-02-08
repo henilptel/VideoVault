@@ -8,15 +8,16 @@
 </head>
 <body>
     <div class="popup-container">
-        <h1>Download Video</h1>
-        <label for="qualitySelect">Select Quality:</label>
-        <select id="qualitySelect" class="quality-select">
-            <option value="best">Best Quality</option>
-            <option value="worst">Worst Quality</option>
-            <option value="audio">Audio Only</option>
-            <option value="720p">720p</option>
-            <option value="1080p">1080p</option>
-        </select>
+        <h1 class="heading">Download Video</h1>
+        <div class="quality-selector">
+            <label for="qualitySelect">Select Quality:</label>
+            <select id="qualitySelect" class="quality-select">
+                <option value="best">Best Quality</option>
+                <option value="720p">720p</option>
+                <option value="1080p">1080p</option>
+                <option value="audio">Audio Only</option>
+            </select>
+        </div>
         <button id="downloadBtn" class="download-btn">
             <span class="button-text">Download Video</span>
         </button>
