@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YT-DLP Extension</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="popup-container">
+        <h1>Download Video</h1>
+        <label for="qualitySelect">Select Quality:</label>
+        <select id="qualitySelect" class="quality-select">
+            <option value="best">Best Quality</option>
+            <option value="worst">Worst Quality</option>
+            <option value="audio">Audio Only</option>
+            <option value="720p">720p</option>
+            <option value="1080p">1080p</option>
+        </select>
+        <button id="downloadBtn" class="download-btn">
+            <span class="button-text">Download Video</span>
+        </button>
+        <div id="loadingSpinner" class="loading-spinner" style="display: none;"></div>
+        <div id="message" class="message"></div>
+    </div>
+    <div class="made-by">Made by Henil</div>
+    <script src="popup.js" defer></script>
+</body>
+</html>

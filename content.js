@@ -1,0 +1,1 @@
+console.log("YT-DLP Extension Loaded");
