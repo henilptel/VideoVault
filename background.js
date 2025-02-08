@@ -27,9 +27,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         case "audio":
             qualityOption = "-f bestaudio";
             break;
-        case "worst":
-            qualityOption = "-f worst";
-            break;
         case "best":
         default:
             qualityOption = "-f best";
