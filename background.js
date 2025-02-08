@@ -17,29 +17,35 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     
     let qualityOption = "";
+    let isAudioOnly = false;
+    
     switch (selectedQuality) {
         case "720p":
-            qualityOption = "-f bestvideo[height<=720]+bestaudio/best";
+            qualityOption = "-f bestvideo[height<=720]+bestaudio/best"; 
             break;
         case "1080p":
-            qualityOption = "-f bestvideo[height<=1080]+bestaudio/best";
+            qualityOption = "-f bestvideo[height<=1080]+bestaudio/best"; 
             break;
         case "audio":
-            qualityOption = "-f bestaudio";
+            qualityOption = "--extract-audio --audio-format mp3"; 
+            isAudioOnly = true;
+            break;
+        case "worst":
+            qualityOption = "-f worst";
             break;
         case "best":
         default:
-            qualityOption = "-f best";
+            qualityOption = "-f bestvideo+bestaudio/best";
             break;
     }
 
-    console.log("Sending Download Request:", { videoUrl, qualityOption });
+    console.log("Sending Download Request:", { videoUrl, qualityOption, isAudioOnly });
 
     
     fetch("http://localhost:5000/download", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: videoUrl, qualityOption }) 
+        body: JSON.stringify({ url: videoUrl, qualityOption, selectedQuality, isAudioOnly }) 
     })
     .then(response => response.json())
     .then(data => {

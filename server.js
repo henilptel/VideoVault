@@ -7,11 +7,13 @@ app.use(express.json());
 app.use(cors());
 
 app.post("/download", (req, res) => {
-    const { url, qualityOption } = req.body;
+    const { url, qualityOption, selectedQuality, isAudioOnly } = req.body;
 
     console.log("Received download request:");
     console.log("URL:", url);
-    console.log("Quality:", qualityOption);
+    console.log("Quality Option:", qualityOption);
+    console.log("Selected Quality:", selectedQuality);
+    console.log("Is Audio Only:", isAudioOnly);
 
     
     if (!url || url === "undefined") {
@@ -25,7 +27,15 @@ app.post("/download", (req, res) => {
     }
 
     
-    const command = `python -m yt_dlp ${qualityOption} -o "downloads/%(title)s.%(ext)s" "${url}"`;
+    let fileName;
+    if (isAudioOnly) {
+        fileName = `downloads/%(title)s-${selectedQuality}.mp3`; 
+    } else {
+        fileName = `downloads/%(title)s-${selectedQuality}.mp4`; 
+    }
+
+    
+    const command = `python -m yt_dlp ${qualityOption} -o "${fileName}" --merge-output-format mp4 "${url}"`;
 
     console.log("Executing command:", command);
 
