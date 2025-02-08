@@ -1,0 +1,26 @@
+{
+    "manifest_version": 3,
+    "name": "YT-DLP Chrome Extension",
+    "version": "1.0",
+    "description": "A Chrome extension to download videos using yt-dlp",
+    "permissions": ["activeTab", "scripting"],
+    "host_permissions": ["https://www.youtube.com/*"],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+        "16": "icon.png",
+        "48": "icon.png",
+        "128": "icon.png"
+      }
+    },
+    "content_scripts": [
+      {
+        "matches": ["https://www.youtube.com/*"],
+        "js": ["content.js"]
+      }
+    ]
+}
+  
