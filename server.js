@@ -33,12 +33,33 @@ app.post("/download", (req, res) => {
     let fileName = `downloads/%(title)s-${selectedQuality}.mp4`;
 
     let correctQualityOption = qualityOption;
-    if (selectedQuality === "720p") {
-        correctQualityOption = `-f "bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best"`;
+    switch (selectedQuality) {
+        case "144p":
+            correctQualityOption = `-f "bestvideo[height<=144][ext=mp4]+bestaudio[ext=m4a]/best"`;
+            break;
+        case "240p":
+            correctQualityOption = `-f "bestvideo[height<=240][ext=mp4]+bestaudio[ext=m4a]/best"`;
+            break;
+        case "360p":
+            correctQualityOption = `-f "bestvideo[height<=360][ext=mp4]+bestaudio[ext=m4a]/best"`;
+            break;
+        case "480p":
+            correctQualityOption = `-f "bestvideo[height<=480][ext=mp4]+bestaudio[ext=m4a]/best"`;
+            break;
+        case "720p":
+            correctQualityOption = `-f "bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best"`;
+            break;
+        case "1080p":
+            correctQualityOption = `-f "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best"`;
+            break;
+        case "1440p":
+            correctQualityOption = `-f "bestvideo[height<=1440][ext=mp4]+bestaudio[ext=m4a]/best"`;
+            break;
+        case "2160p":
+            correctQualityOption = `-f "bestvideo[height<=2160][ext=mp4]+bestaudio[ext=m4a]/best"`;
+            break;
     }
-    if (selectedQuality === "1080p") {
-        correctQualityOption = `-f "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best"`;
-    }
+    
     if (isAudioOnly) {
         correctQualityOption = `-f "bestaudio[ext=m4a]/best" --audio-format mp3`;
         fileName = `downloads/%(title)s-${selectedQuality}.mp3`;

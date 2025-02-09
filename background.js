@@ -20,6 +20,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     let isAudioOnly = false;
     
     switch (selectedQuality) {
+        case "144p":
+            qualityOption = "-f \"bestvideo[height<=144]+bestaudio/best\"";
+            break;
+        case "240p":
+            qualityOption = "-f \"bestvideo[height<=240]+bestaudio/best\"";
+            break;
+        case "360p":
+            qualityOption = "-f \"bestvideo[height<=360]+bestaudio/best\"";
+            break;
+        case "480p":
+            qualityOption = "-f \"bestvideo[height<=480]+bestaudio/best\"";
+            break;
+        case "1440p":
+            qualityOption = "-f \"bestvideo[height<=1440]+bestaudio/best\"";
+            break;
+        case "2160p":
+            qualityOption = "-f \"bestvideo[height<=2160]+bestaudio/best\"";
+            break;
         case "720p":
             qualityOption = "-f \"bestvideo[height<=720]+bestaudio/best\""; 
             break;
