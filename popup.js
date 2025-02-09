@@ -1,50 +1,79 @@
-document.getElementById("downloadBtn").addEventListener("click", async () => {
+
+const elements = {
+    downloadBtn: document.getElementById("downloadBtn"),
+    qualitySelect: document.getElementById("qualitySelect"),
+    spinner: document.getElementById("loadingSpinner"),
+    messageElement: document.getElementById("message")
+};
+
+function isValidYouTubeUrl(url) {
+    return url && url.match(/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/);
+}
+
+function showMessage(message, isSuccess) {
+    elements.messageElement.style.opacity = 1;
+    elements.messageElement.textContent = message;
+    elements.messageElement.classList.toggle("success", isSuccess);
+    elements.messageElement.classList.toggle("error", !isSuccess);
+}
+
+function showErrorMessage(message) {
+    showMessage(message, false);
+}
+
+function resetUI() {
+    elements.spinner.style.display = "none";
+    elements.downloadBtn.classList.remove("loading");
+    elements.messageElement.textContent = "";
+    elements.messageElement.style.opacity = 0;
+    elements.messageElement.classList.remove("success", "error");
+}
+
+function setLoadingState() {
+    elements.downloadBtn.classList.add("loading");
+    elements.spinner.style.display = "block";
+    elements.messageElement.textContent = "";
+    elements.messageElement.style.opacity = 0;
+}
+
+elements.downloadBtn.addEventListener("click", async () => {
     try {
         let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         if (!tab) {
             throw new Error("No active tab found");
         }
 
-        const selectedQuality = document.getElementById("qualitySelect").value;
-        const button = document.getElementById("downloadBtn");
-        
-        const spinner = document.getElementById("loadingSpinner");
-        const messageElement = document.getElementById("message");
+        if (!isValidYouTubeUrl(tab.url)) {
+            throw new Error("Not a valid YouTube URL");
+        }
 
-        button.classList.add("loading");
-        spinner.style.display = "block";
-        messageElement.textContent = "";
-        messageElement.style.opacity = 0;
+        const selectedQuality = elements.qualitySelect.value;
+        setLoadingState();
 
         chrome.runtime.sendMessage({
             videoUrl: tab.url,
             selectedQuality: selectedQuality
         });
     } catch (error) {
-        showErrorMessage("Failed to start download: " + error.message);
+        showErrorMessage(`Failed to start download: ${error.message}`);
+        resetUI();
     }
 });
 
 chrome.runtime.onMessage.addListener((message) => {
     const { status, msg } = message;
-    const spinner = document.getElementById("loadingSpinner");
-    const messageElement = document.getElementById("message");
-    const button = document.getElementById("downloadBtn");
+    
+    resetUI();
 
-    spinner.style.display = "none";
-    button.classList.remove("loading");
+    if (!status) {
+        return;
+    }
 
     setTimeout(() => {
-        if (status) {
-            messageElement.style.opacity = 1;
-            messageElement.textContent = msg || (status === "success" ? "Download started!" : "Something went wrong.");
-            if (status === "success") {
-                messageElement.classList.add("success");
-                messageElement.classList.remove("error");
-            } else {
-                messageElement.classList.add("error");
-                messageElement.classList.remove("success");
-            }
-        }
+        const isSuccess = status === "success";
+        const displayMessage = msg || (isSuccess ? "Download started!" : "Something went wrong.");
+        showMessage(displayMessage, isSuccess);
     }, 1500);
 });
+
+document.addEventListener("DOMContentLoaded", resetUI);
