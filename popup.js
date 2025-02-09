@@ -1,18 +1,28 @@
 document.getElementById("downloadBtn").addEventListener("click", async () => {
-    let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    try {
+        let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (!tab) {
+            throw new Error("No active tab found");
+        }
 
-    const selectedQuality = document.getElementById("qualitySelect").value;
+        const selectedQuality = document.getElementById("qualitySelect").value;
+        const button = document.getElementById("downloadBtn");
+        
+        const spinner = document.getElementById("loadingSpinner");
+        const messageElement = document.getElementById("message");
 
-    const button = document.getElementById("downloadBtn");
-    button.classList.add("loading");
-    document.getElementById("loadingSpinner").style.display = "block";
-    document.getElementById("message").textContent = "";
-    document.getElementById("message").style.opacity = 0;
+        button.classList.add("loading");
+        spinner.style.display = "block";
+        messageElement.textContent = "";
+        messageElement.style.opacity = 0;
 
-    chrome.runtime.sendMessage({
-        videoUrl: tab.url,
-        selectedQuality: selectedQuality
-    });
+        chrome.runtime.sendMessage({
+            videoUrl: tab.url,
+            selectedQuality: selectedQuality
+        });
+    } catch (error) {
+        showErrorMessage("Failed to start download: " + error.message);
+    }
 });
 
 chrome.runtime.onMessage.addListener((message) => {
