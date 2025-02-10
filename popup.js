@@ -36,6 +36,35 @@ function setLoadingState() {
     elements.messageElement.style.opacity = 0;
 }
 
+async function getVideoDetails(videoUrl) {
+    const videoId = new URL(videoUrl).searchParams.get("v");
+    if (!videoId) return;
+
+    const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+    const thumbnail = document.getElementById("thumbnail");
+    
+    thumbnail.src = thumbnailUrl;
+    
+    thumbnail.onerror = () => {
+        thumbnail.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+    };
+
+    const apiUrl = `https://noembed.com/embed?url=${videoUrl}`;
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        document.getElementById("videoTitle").textContent = data.title || "Unknown Title";
+    } catch (error) {
+        document.getElementById("videoTitle").textContent = "Error fetching title";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    await getVideoDetails(tab.url);
+});
+
+
 elements.downloadBtn.addEventListener("click", async () => {
     try {
         let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
