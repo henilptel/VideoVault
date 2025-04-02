@@ -197,3 +197,26 @@ select {
     cursor: pointer;
     font-weight: 400;
 }
+
+/* Playlist Title Display */
+.playlist-title-container {
+    margin-bottom: 12px; 
+    padding: 8px 10px;
+    background-color: #3a3a3a; 
+    border-radius: 5px;
+    border-left: 3px solid #1db954; 
+    text-align: left;
+}
+
+.playlist-label {
+    font-weight: 600;
+    color: #ccc;
+    font-size: 13px;
+    margin-right: 6px;
+}
+
+.playlist-title-display {
+    font-weight: 500;
+    color: #fff;
+    font-size: 13px;
+}
