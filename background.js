@@ -65,19 +65,28 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: videoUrl, qualityOption, selectedQuality, isAudioOnly }) 
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errData => {
+                throw new Error(errData.error || `Server error: ${response.status} ${response.statusText}`);
+            }).catch(() => {
+                throw new Error(`Server error: ${response.status} ${response.statusText}`);
+            });
+        }
+        return response.json(); 
+    })
     .then(data => {
-        console.log("Download started!", data);
+        console.log("Download Success Response:", data);
         chrome.runtime.sendMessage({
             status: "success",
-            msg: "Download started successfully!"
+            msg: data.message || "Download started successfully!" 
         });
     })
     .catch(error => {
-        console.error("Download failed", error);
+        console.error("Download failed:", error);
         chrome.runtime.sendMessage({
             status: "error",
-            msg: "Something went wrong. Please try again."
+            msg: error.message || "An unexpected error occurred. Check server logs." 
         });
     });
 });
