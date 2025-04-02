@@ -1,13 +1,24 @@
-
 const elements = {
     downloadBtn: document.getElementById("downloadBtn"),
     qualitySelect: document.getElementById("qualitySelect"),
     spinner: document.getElementById("loadingSpinner"),
-    messageElement: document.getElementById("message")
+    messageElement: document.getElementById("message"),
+    playlistOptionsDiv: document.getElementById("playlistOptions"),
+    videoTitleElement: document.getElementById("videoTitle"),
+    thumbnailElement: document.getElementById("thumbnail")
 };
 
 function isValidYouTubeUrl(url) {
     return url && url.match(/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/);
+}
+
+function isYouTubePlaylistUrl(url) {
+    try {
+        const urlObj = new URL(url);
+        return urlObj.hostname.includes('youtube.com') && urlObj.searchParams.has('list');
+    } catch (e) {
+        return false;
+    }
 }
 
 function showMessage(message, isSuccess) {
@@ -60,10 +71,21 @@ async function getVideoDetails(videoUrl) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    await getVideoDetails(tab.url);
+    resetUI(); 
+    try {
+        let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (tab && tab.url) {
+            if (isYouTubePlaylistUrl(tab.url)) {
+                elements.playlistOptionsDiv.style.display = "block";
+            }
+            await getVideoDetails(tab.url);
+        } else {
+            showErrorMessage("Could not get active tab information.");
+        }
+    } catch (error) {
+        showErrorMessage("Error initializing popup: " + error.message);
+    }
 });
-
 
 elements.downloadBtn.addEventListener("click", async () => {
     try {
@@ -79,9 +101,18 @@ elements.downloadBtn.addEventListener("click", async () => {
         const selectedQuality = elements.qualitySelect.value;
         setLoadingState();
 
+        let downloadType = "single"; 
+        if (elements.playlistOptionsDiv.style.display === "block") {
+            const selectedRadio = document.querySelector('input[name="playlistChoice"]:checked');
+            if (selectedRadio) {
+                downloadType = selectedRadio.value; 
+            }
+        }
+
         chrome.runtime.sendMessage({
             videoUrl: tab.url,
-            selectedQuality: selectedQuality
+            selectedQuality: selectedQuality,
+            downloadType: downloadType 
         });
     } catch (error) {
         showErrorMessage(`Failed to start download: ${error.message}`);
@@ -102,7 +133,9 @@ chrome.runtime.onMessage.addListener((message) => {
         const isSuccess = status === "success";
         const displayMessage = msg || (isSuccess ? "Download started!" : "Something went wrong.");
         showMessage(displayMessage, isSuccess);
-    }, 1500);
+    }, 100);
 });
 
-document.addEventListener("DOMContentLoaded", resetUI);
+document.addEventListener("DOMContentLoaded", () => {
+    resetUI(); 
+});

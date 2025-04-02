@@ -8,13 +8,14 @@ app.use(express.json());
 app.use(cors());
 
 app.post("/download", (req, res) => {
-    const { url, qualityOption, selectedQuality, isAudioOnly } = req.body;
+    const { url, qualityOption, selectedQuality, isAudioOnly, downloadType } = req.body;
 
     console.log("Received download request:");
     console.log("URL:", url);
     console.log("Quality Option:", qualityOption);
     console.log("Selected Quality:", selectedQuality);
     console.log("Is Audio Only:", isAudioOnly);
+    console.log("Download Type:", downloadType);
 
     if (!url || url === "undefined") {
         console.error("Invalid video URL received:", url);
@@ -65,7 +66,12 @@ app.post("/download", (req, res) => {
         fileName = `downloads/%(title)s-${selectedQuality}.mp3`;
     }
 
-    const finalCommand = `python -m yt_dlp ${correctQualityOption} -o "${fileName}" --merge-output-format mp4 "${url}"`;
+    let commandFlags = correctQualityOption;
+    if (downloadType === 'single') {
+        commandFlags += " --no-playlist";
+    }
+
+    const finalCommand = `python -m yt_dlp ${commandFlags} -o "${fileName}" --merge-output-format mp4 "${url}"`;
 
     console.log("Executing command:", finalCommand);
 

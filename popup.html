@@ -30,6 +30,19 @@
                 <option value="audio">Audio Only</option>
             </select>
         </div>
+
+        <div id="playlistOptions" class="playlist-options" style="display: none;">
+            <label>Download:</label>
+            <div class="radio-group">
+                <input type="radio" id="downloadSingle" name="playlistChoice" value="single" checked>
+                <label for="downloadSingle">This Video Only</label>
+            </div>
+            <div class="radio-group">
+                <input type="radio" id="downloadPlaylist" name="playlistChoice" value="playlist">
+                <label for="downloadPlaylist">Entire Playlist</label>
+            </div>
+        </div>
+
         <button id="downloadBtn" class="download-btn">
             <span class="button-text">Download Video</span>
         </button>

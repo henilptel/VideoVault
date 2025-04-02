@@ -1,7 +1,7 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log("Received Request:", request); 
 
-    const { videoUrl, selectedQuality } = request;
+    const { videoUrl, selectedQuality, downloadType } = request;
 
     if (!videoUrl || videoUrl === "undefined") {
         console.error("Invalid video URL received:", videoUrl);
@@ -63,7 +63,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     fetch("http://localhost:5000/download", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: videoUrl, qualityOption, selectedQuality, isAudioOnly }) 
+        body: JSON.stringify({
+            url: videoUrl,
+            qualityOption, 
+            selectedQuality, 
+            isAudioOnly,
+            downloadType 
+        }) 
     })
     .then(response => {
         if (!response.ok) {
