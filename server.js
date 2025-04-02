@@ -85,4 +85,31 @@ app.post("/download", (req, res) => {
     });
 });
 
+app.get("/playlist-details", (req, res) => {
+    const { url } = req.query;
+
+    if (!url || !url.includes("list=")) {
+        return res.status(400).json({ error: "Invalid or missing playlist URL" });
+    }
+
+    const command = `python -m yt_dlp --flat-playlist --dump-single-json "${url}"`;
+    console.log("Executing command for playlist details:", command);
+
+    exec(command, { shell: true, maxBuffer: 1024 * 1024 * 5 }, (error, stdout, stderr) => { 
+        if (error) {
+            console.error("Error getting playlist details:", stderr);
+            return res.status(500).json({ error: `Failed to get playlist details: ${stderr}` });
+        }
+        try {
+            const data = JSON.parse(stdout);
+            const playlistTitle = data.title || "Playlist Title Not Found";
+            console.log("Playlist Details Found:", playlistTitle);
+            res.json({ title: playlistTitle });
+        } catch (parseError) {
+            console.error("Error parsing playlist details JSON:", parseError, "\nStdout:", stdout);
+            res.status(500).json({ error: "Failed to parse playlist details" });
+        }
+    });
+});
+
 app.listen(5000, () => console.log("Server running on port 5000"));

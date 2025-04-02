@@ -5,7 +5,9 @@ const elements = {
     messageElement: document.getElementById("message"),
     playlistOptionsDiv: document.getElementById("playlistOptions"),
     videoTitleElement: document.getElementById("videoTitle"),
-    thumbnailElement: document.getElementById("thumbnail")
+    thumbnailElement: document.getElementById("thumbnail"),
+    playlistTitleContainer: document.getElementById("playlistTitleContainer"),
+    playlistTitleDisplay: document.getElementById("playlistTitleDisplay")
 };
 
 function isValidYouTubeUrl(url) {
@@ -70,6 +72,21 @@ async function getVideoDetails(videoUrl) {
     }
 }
 
+async function getPlaylistDetails(playlistUrl) {
+    try {
+        const response = await fetch(`http://localhost:5000/playlist-details?url=${encodeURIComponent(playlistUrl)}`);
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({ error: `Server error: ${response.status}` }));
+            throw new Error(errData.error || `HTTP error ${response.status}`);
+        }
+        const data = await response.json();
+        return data.title;
+    } catch (error) {
+        console.error("Failed to fetch playlist details:", error);
+        return null; 
+    }
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     resetUI(); 
     try {
@@ -77,6 +94,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (tab && tab.url) {
             if (isYouTubePlaylistUrl(tab.url)) {
                 elements.playlistOptionsDiv.style.display = "block";
+                elements.playlistTitleContainer.style.display = "block"; 
+                const playlistTitle = await getPlaylistDetails(tab.url);
+                if (playlistTitle) {
+                    elements.playlistTitleDisplay.textContent = playlistTitle;
+                } else {
+                    elements.playlistTitleDisplay.textContent = "Could not load playlist title";
+                    elements.playlistTitleDisplay.style.color = "#e74c3c"; 
+                }
             }
             await getVideoDetails(tab.url);
         } else {
